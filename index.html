@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Content Rewriter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Content Rewriter Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,189 +15,306 @@
         }
 
         :root {
-            --bg: #0a0a0a;
-            --bg-secondary: #111111;
-            --text: #f0f0f0;
-            --text-muted: #888888;
+            --bg: #050505;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #111111;
+            --text: #f5f5f5;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
             --accent: #00ffa3;
-            --accent-dim: rgba(0, 255, 163, 0.1);
-            --border: #222222;
+            --accent-glow: rgba(0, 255, 163, 0.15);
+            --accent-secondary: #00d4ff;
+            --border: #1a1a1a;
+            --border-hover: #333333;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 4rem 2rem;
+            padding: 3rem 1.5rem;
         }
 
+        /* Header */
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
+            padding: 2rem 0;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
         }
 
         h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
             margin-bottom: 0.5rem;
         }
 
         h1 span {
-            color: var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .subtitle {
-            color: var(--text-muted);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        .editor-grid {
+        /* Editor Grid */
+        .editor-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .editor-box {
+        .editor-panel {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1.5rem;
+            overflow: hidden;
+            transition: border-color 0.2s;
         }
 
-        .editor-label {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
+        .editor-panel:focus-within {
+            border-color: var(--border-hover);
+        }
+
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
         }
 
-        textarea {
-            width: 100%;
-            min-height: 300px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            color: var(--text);
-            resize: vertical;
-            line-height: 1.7;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .style-selector {
-            margin-bottom: 2rem;
-        }
-
-        .style-label {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+        .panel-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .styles {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .style-btn {
-            padding: 0.75rem 1.25rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-muted);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .style-btn:hover {
-            border-color: var(--text-muted);
-        }
-
-        .style-btn.active {
-            border-color: var(--accent);
-            background: var(--accent-dim);
-            color: var(--accent);
-        }
-
-        .action-btn {
-            width: 100%;
-            padding: 1.25rem;
-            background: var(--accent);
-            border: none;
-            border-radius: 8px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--bg);
-            cursor: pointer;
-            transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 163, 0.3);
+        .word-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
         }
 
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        textarea {
+            width: 100%;
+            min-height: 320px;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            resize: none;
         }
 
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 3rem;
+        textarea::placeholder {
+            color: var(--text-muted);
         }
 
-        .loading.show {
+        textarea:focus {
+            outline: none;
+        }
+
+        /* Style Selector */
+        .controls-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
             display: block;
         }
 
-        .spinner {
-            font-size: 2rem;
-            animation: spin 1s linear infinite;
+        .style-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .style-btn {
+            padding: 0.6rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .style-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text);
+        }
+
+        .style-btn.active {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Action Button */
+        .action-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .generate-btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-overlay.show {
+            display: block;
+        }
+
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Output Panel */
+        .output-panel {
+            display: none;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .output-panel.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .output-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .copy-btn {
             padding: 0.4rem 0.75rem;
             background: transparent;
             border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-muted);
-            font-size: 0.75rem;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .copy-btn:hover {
@@ -203,18 +322,65 @@
             color: var(--accent);
         }
 
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border);
-            margin-top: 4rem;
+        .output-content {
+            padding: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: var(--text-secondary);
         }
 
+        /* API Status */
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.connected {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .status-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        footer p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .editor-grid {
+            .editor-section {
                 grid-template-columns: 1fr;
+            }
+            
+            textarea {
+                min-height: 200px;
             }
         }
     </style>
@@ -222,53 +388,83 @@
 <body>
     <div class="container">
         <header>
+            <div class="logo">&lt;/&gt; witch-agent</div>
             <h1>Content <span>Rewriter</span></h1>
-            <p class="subtitle">Transform your content into different styles</p>
+            <p class="subtitle">Transform your content into any style with AI power</p>
         </header>
 
-        <div class="editor-grid">
-            <div class="editor-box">
-                <div class="editor-label">
-                    <span>Original Text</span>
+        <div class="api-status">
+            <div class="status-dot" id="apiStatus"></div>
+            <span class="status-text" id="apiStatusText">Template Mode - API Ready</span>
+        </div>
+
+        <div class="editor-section">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Input</span>
+                    <span class="word-count" id="inputCount">0 words</span>
                 </div>
-                <textarea id="input" placeholder="Paste your content here..."></textarea>
+                <textarea id="inputText" placeholder="Paste your content here...&#10;&#10;Whether it's a rough draft, an old article, or notes - transform it into polished, professional content."></textarea>
             </div>
-            <div class="editor-box">
-                <div class="editor-label">
-                    <span>Rewritten</span>
-                    <button class="copy-btn" onclick="copyOutput()">Copy</button>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Output</span>
+                    <span class="word-count" id="outputCount">0 words</span>
                 </div>
-                <textarea id="output" placeholder="Rewritten content will appear here..." readonly></textarea>
+                <textarea id="outputText" placeholder="Your rewritten content will appear here..." readonly></textarea>
             </div>
         </div>
 
-        <div class="style-selector">
-            <div class="style-label">Choose Style</div>
-            <div class="styles">
+        <div class="controls-section">
+            <label class="control-label">Rewrite Style</label>
+            <div class="style-grid">
                 <button class="style-btn active" data-style="professional">Professional</button>
                 <button class="style-btn" data-style="casual">Casual</button>
                 <button class="style-btn" data-style="academic">Academic</button>
+                <button class="style-btn" data-style="technical">Technical</button>
                 <button class="style-btn" data-style="creative">Creative</button>
-                <button class="style-btn" data-style="social">Social Media</button>
-                <button class="style-btn" data-style="email">Email</button>
+                <button class="style-btn" data-style="persuasive">Persuasive</button>
+                <button class="style-btn" data-style="storytelling">Storytelling</button>
+                <button class="style-btn" data-style="concise">Concise</button>
             </div>
         </div>
 
-        <button class="action-btn" onclick="rewrite()">Rewrite Content</button>
+        <div class="action-section">
+            <button class="generate-btn" onclick="rewriteContent()">
+                Rewrite Content
+            </button>
+        </div>
 
-        <div class="loading" id="loading">
-            <div class="spinner">⟳</div>
-            <p>Rewriting your content...</p>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <p class="loading-text">Transforming your content...</p>
+        </div>
+
+        <div class="output-panel" id="outputPanel">
+            <div class="output-header">
+                <span class="output-label">Rewritten Content</span>
+                <button class="copy-btn" onclick="copyOutput()">Copy</button>
+            </div>
+            <div class="output-content" id="outputContent"></div>
         </div>
 
         <footer>
-            <p>Built by witch-agent</p>
+            <p>Built by witch-agent | Transform with style</p>
         </footer>
     </div>
 
     <script>
+        // Configuration
+        const API_ENDPOINT = ''; // Set your Vercel/API endpoint here
+        
         let selectedStyle = 'professional';
 
+        // Style selection
         document.querySelectorAll('.style-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
@@ -277,55 +473,98 @@
             });
         });
 
-        // Template-based rewriting (fallback)
-        const templates = {
-            professional: (text) => {
-                return `PROFESSIONAL REWRITE:\n\n${text}\n\n---\n\n[This is a professional rewrite using template-based formatting. Connect an AI API for real intelligent rewriting.]`;
-            },
-            casual: (text) => {
-                return `Hey! Here's a casual version:\n\n${text}\n\n---\n\n[This is a casual rewrite using template-based formatting.]`;
-            },
-            academic: (text) => {
-                return `ACADEMIC REWRITE:\n\n${text}\n\n[Note: This is a template-based rewrite. Connect AI API for intelligent academic writing.]`;
-            },
-            creative: (text) => {
-                return `✨ CREATIVE REWRITE ✨\n\n${text}\n\n---\n\n[Creative rewrite using templates. Connect AI for real creative content.]`;
-            },
-            social: (text) => {
-                return `🗣️ SOCIAL MEDIA VERSION:\n\n${text}\n\n#Content #Writing\n\n[Template-based. Connect AI for real social content.]`;
-            },
-            email: (text) => {
-                return `Subject: Quick Update\n\nDear [Recipient],\n\n${text}\n\nBest regards,\n[Your Name]\n\n[Template-based. Connect AI for real email writing.]`;
-            }
-        };
+        // Word count
+        document.getElementById('inputText').addEventListener('input', function() {
+            const text = this.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.getElementById('inputCount').textContent = words + ' words';
+        });
 
-        function rewrite() {
-            const input = document.getElementById('input').value.trim();
+        document.getElementById('outputText').addEventListener('input', function() {
+            const text = this.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.getElementById('outputCount').textContent = words + ' words';
+        });
+
+        // Rewrite function
+        async function rewriteContent() {
+            const input = document.getElementById('inputText').value.trim();
             
             if (!input) {
                 alert('Please enter some content to rewrite!');
                 return;
             }
 
-            document.getElementById('loading').classList.add('show');
-            document.getElementById('output').value = '';
+            // Show loading
+            document.getElementById('loadingOverlay').classList.add('show');
+            document.getElementById('outputPanel').classList.remove('show');
 
-            // Simulate processing
-            setTimeout(() => {
-                const result = templates[selectedStyle](input);
-                document.getElementById('output').value = result;
-                document.getElementById('loading').classList.remove('show');
-            }, 1500);
+            try {
+                // Try API first if configured
+                if (API_ENDPOINT) {
+                    const response = await fetch(API_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            text: input, 
+                            style: selectedStyle 
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayOutput(data.result || data.content || data.text);
+                        return;
+                    }
+                }
+                
+                // Fallback to templates
+                const result = await generateWithTemplate(input, selectedStyle);
+                displayOutput(result);
+                
+            } catch (error) {
+                console.log('API not available, using template');
+                const result = await generateWithTemplate(input, selectedStyle);
+                displayOutput(result);
+            }
+        }
+
+        // Template-based generation
+        function generateWithTemplate(text, style) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const templates = {
+                        professional: `PROFESSIONAL REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in professional style. Connect API for intelligent rewriting.]`,
+                        casual: `CASUAL REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in casual style. Connect API for intelligent rewriting.]`,
+                        academic: `ACADEMIC REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in academic style. Connect API for intelligent rewriting.]`,
+                        technical: `TECHNICAL REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in technical style. Connect API for intelligent rewriting.]`,
+                        creative: `CREATIVE REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in creative style. Connect API for intelligent rewriting.]`,
+                        persuasive: `PERSUASIVE REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in persuasive style. Connect API for intelligent rewriting.]`,
+                        storytelling: `STORYTELLING REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in storytelling style. Connect API for intelligent rewriting.]`,
+                        concise: `CONCISE REWRITE\n\n${text}\n\n---\n\n[AI-powered rewrite in concise style. Connect API for intelligent rewriting.]`
+                    };
+                    resolve(templates[style] || templates.professional);
+                }, 1500);
+            });
+        }
+
+        function displayOutput(text) {
+            document.getElementById('loadingOverlay').classList.remove('show');
+            document.getElementById('outputText').value = text;
+            document.getElementById('outputContent').textContent = text;
+            document.getElementById('outputPanel').classList.add('show');
+            
+            // Update word count
+            const words = text.trim().split(/\s+/).length;
+            document.getElementById('outputCount').textContent = words + ' words';
         }
 
         function copyOutput() {
-            const output = document.getElementById('output');
-            navigator.clipboard.writeText(output.value).then(() => {
+            const text = document.getElementById('outputText').value;
+            navigator.clipboard.writeText(text).then(() => {
                 const btn = document.querySelector('.copy-btn');
                 btn.textContent = 'Copied!';
-                setTimeout(() => {
-                    btn.textContent = 'Copy';
-                }, 2000);
+                setTimeout(() => btn.textContent = 'Copy', 2000);
             });
         }
     </script>
