@@ -1,0 +1,12 @@
+# Environment variables (NEVER commit!)
+.env
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/

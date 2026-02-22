@@ -460,9 +460,31 @@
 
     <script>
         // Configuration
-        const API_ENDPOINT = ''; // Set your Vercel/API endpoint here
+        // Configuration - Set your Vercel/API endpoint here
+const API_ENDPOINT = 'https://your-project.vercel.app/api/rewrite'; // Update with your Vercel URL
         
         let selectedStyle = 'professional';
+
+        // Check API health on load
+        async function checkApiHealth() {
+            try {
+                const response = await fetch('http://localhost:3000/api/health');
+                const data = await response.json();
+                const statusDot = document.getElementById('apiStatus');
+                const statusText = document.getElementById('apiStatusText');
+                
+                if (data.apiConfigured) {
+                    statusDot.classList.add('connected');
+                    statusText.textContent = 'API Connected - Ready';
+                } else {
+                    statusText.textContent = 'API Not Configured - Add API Key in server.js';
+                }
+            } catch (error) {
+                document.getElementById('apiStatusText').textContent = 'Server Not Running - Start server.js';
+            }
+        }
+        
+        checkApiHealth();
 
         // Style selection
         document.querySelectorAll('.style-btn').forEach(btn => {
@@ -518,14 +540,13 @@
                     }
                 }
                 
-                // Fallback to templates
-                const result = await generateWithTemplate(input, selectedStyle);
-                displayOutput(result);
+                // Fallback to templates - removed since we want API only
+                throw new Error('API request failed');
                 
             } catch (error) {
-                console.log('API not available, using template');
-                const result = await generateWithTemplate(input, selectedStyle);
-                displayOutput(result);
+                console.error('Error:', error);
+                document.getElementById('loadingOverlay').classList.remove('show');
+                alert('Error connecting to API. Please make sure the backend server is running.');
             }
         }
 
