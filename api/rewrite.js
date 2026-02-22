@@ -2,7 +2,7 @@
 // Deploy to Vercel and set MINIMAX_API_KEY in Vercel Dashboard
 
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY;
-const MINIMAX_BASE_URL = 'https://api.minimax.chat';
+const MINIMAX_BASE_URL = 'https://api.minimax.io/anthropic';
 
 // Style prompts
 const stylePrompts = {
@@ -48,27 +48,29 @@ export default async function handler(req, res) {
         const selectedStyle = style || 'professional';
         const prompt = stylePrompts[selectedStyle] || stylePrompts.professional;
         
-        // Call MiniMax API
-        const response = await fetch(`${MINIMAX_BASE_URL}/v1/text/chatcompletion_v2`, {
+        // Call MiniMax API (Anthropic-compatible)
+        const response = await fetch(`${MINIMAX_BASE_URL}/v1/messages`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${MINIMAX_API_KEY}`
+                'x-api-key': MINIMAX_API_KEY,
+                'anthropic-version': '2023-06-01'
             },
             body: JSON.stringify({
-                model: 'MiniMax-Text-01',
+                model: 'MiniMax-M2.5',
+                max_tokens: 4096,
+                system: 'You are a professional content rewriter. Rewrite the given text according to the specified style while maintaining the original meaning.',
                 messages: [
                     {
-                        role: 'system',
-                        content: 'You are a professional content rewriter. Rewrite the given text according to the specified style while maintaining the original meaning.'
-                    },
-                    {
                         role: 'user',
-                        content: `${prompt}\n\nOriginal text:\n${text}`
+                        content: [
+                            {
+                                type: 'text',
+                                text: `${prompt}\n\nOriginal text:\n${text}`
+                            }
+                        ]
                     }
-                ],
-                temperature: 0.7,
-                max_tokens: 4096
+                ]
             })
         });
         
@@ -84,7 +86,14 @@ export default async function handler(req, res) {
         const data = await response.json();
         
         // Extract the generated text from response
-        const result = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || '';
+        let result = '';
+        for (const block of data.content) {
+            if (block.type === 'text') {
+                result += block.text;
+            } else if (block.type === 'thinking') {
+                result += block.thinking;
+            }
+        }
         
         return res.status(200).json({ result });
         
