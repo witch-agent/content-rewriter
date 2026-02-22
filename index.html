@@ -467,20 +467,24 @@ const API_ENDPOINT = 'https://content-rewriter-gamma.vercel.app/api/rewrite';
 
         // Check API health on load
         async function checkApiHealth() {
+            const apiUrl = 'https://content-rewriter-gamma.vercel.app';
             try {
-                const response = await fetch('http://localhost:3000/api/health');
-                const data = await response.json();
+                const response = await fetch(apiUrl + '/api/rewrite', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: 'test', style: 'professional' })
+                });
                 const statusDot = document.getElementById('apiStatus');
                 const statusText = document.getElementById('apiStatusText');
                 
-                if (data.apiConfigured) {
+                if (response.ok || response.status === 400) {
                     statusDot.classList.add('connected');
                     statusText.textContent = 'API Connected - Ready';
                 } else {
-                    statusText.textContent = 'API Not Configured - Add API Key in server.js';
+                    statusText.textContent = 'API Error - Check configuration';
                 }
             } catch (error) {
-                document.getElementById('apiStatusText').textContent = 'Server Not Running - Start server.js';
+                document.getElementById('apiStatusText').textContent = 'Server Not Running';
             }
         }
         
