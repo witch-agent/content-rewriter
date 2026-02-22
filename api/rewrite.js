@@ -4,16 +4,101 @@
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY;
 const MINIMAX_BASE_URL = 'https://api.minimax.io/anthropic';
 
-// Style prompts
+// Professional prompts for each style - optimized for MiniMax M2.5
 const stylePrompts = {
-    professional: 'Rewrite the following text in a professional, business-appropriate manner. Maintain the core message but use formal language and structure.',
-    casual: 'Rewrite the following text in a casual, friendly tone. Make it conversational and easy to read.',
-    academic: 'Rewrite the following text in an academic style. Use formal language, proper citations structure, and scholarly tone.',
-    technical: 'Rewrite the following text in a technical style. Use precise terminology, clear explanations, and structured format.',
-    creative: 'Rewrite the following text in a creative, engaging manner. Use vivid language, metaphors, and storytelling elements.',
-    persuasive: 'Rewrite the following text in a persuasive manner. Use compelling arguments, emotional appeals, and strong calls to action.',
-    storytelling: 'Rewrite the following text as a story. Use narrative structure, character development, and engaging storytelling techniques.',
-    concise: 'Rewrite the following text in a concise manner. Remove unnecessary words, get to the point, and make it brief but complete.'
+    professional: `You are an expert content writer with 10+ years of experience in business communication. Your task is to rewrite the given text in a PROFESSIONAL manner.
+
+Requirements:
+- Use formal, business-appropriate language
+- Maintain a confident, authoritative tone
+- Structure the content with clear paragraphs
+- Keep all factual information intact
+- Use professional vocabulary without being stiff
+- Add smooth transitions between ideas
+- Output ONLY the rewritten content, no explanations or thinking process`,
+
+    casual: `You are a friendly, engaging content writer who excels at making any topic accessible and relatable. Your task is to rewrite the given text in a CASUAL, conversational manner.
+
+Requirements:
+- Use a warm, approachable tone as if talking to a friend
+- Include colloquial expressions naturally
+- Keep sentences varied in length for rhythm
+- Make complex ideas simple to understand
+- Add personality and warmth
+- Maintain accuracy of the original information
+- Output ONLY the rewritten content, no explanations`,
+
+    academic: `You are a distinguished academic writer with extensive experience in scholarly publications. Your task is to rewrite the given text in an ACADEMIC style.
+
+Requirements:
+- Use formal academic language and terminology
+- Maintain objective, impersonal tone
+- Structure with clear thesis and supporting points
+- Use precise, nuanced vocabulary
+- Include logical transitions
+- Cite concepts properly without adding fake citations
+- Keep all factual facts and data intact
+- Output ONLY the rewritten content, no meta-commentary`,
+
+    technical: `You are a senior technical writer with deep expertise in simplifying complex information. Your task is to rewrite the given text in a TECHNICAL style.
+
+Requirements:
+- Use precise technical terminology accurately
+- Structure information hierarchically with clear sections
+- Be concise but comprehensive
+- Use active voice where possible
+- Define technical terms when first used
+- Maintain all technical accuracy
+- Include practical examples where helpful
+- Output ONLY the rewritten content`,
+
+    creative: `You are an award-winning creative writer known for captivating storytelling. Your task is to rewrite the given text in a CREATIVE, engaging manner.
+
+Requirements:
+- Use vivid, descriptive language
+- Employ literary devices (metaphors, similes, personification)
+- Create emotional engagement with the reader
+- Vary sentence structure for dramatic effect
+- Use sensory details where appropriate
+- Maintain all factual accuracy
+- Make the content memorable and compelling
+- Output ONLY the rewritten content`,
+
+    persuasive: `You are a master copywriter and persuasion expert. Your task is to rewrite the given text in a PERSUASIVE manner that drives action.
+
+Requirements:
+- Use powerful, action-oriented language
+- Build compelling arguments with clear reasoning
+- Appeal to both logic and emotion
+- Use strong, specific calls-to-action
+- Anticipate and address objections
+- Create urgency without being manipulative
+- Support claims with evidence
+- Output ONLY the rewritten content`,
+
+    storytelling: `You are a professional storyteller and narrative designer. Your task is to rewrite the given text as an engaging STORY.
+
+Requirements:
+- Create a clear narrative arc (beginning, middle, end)
+- Use first or third person perspective naturally
+- Include character development if applicable
+- Build tension and release
+- Use dialogue if it enhances the story
+- Make abstract concepts concrete through examples
+- Maintain all factual accuracy
+- Output ONLY the rewritten content`,
+
+    concise: `You are an expert editor known for distilling complex ideas into clear, impactful content. Your task is to rewrite the given text in a CONCISE manner.
+
+Requirements:
+- Remove all unnecessary words and filler
+- Keep sentences short and direct
+- Eliminate redundant phrases
+- Maintain the essential message
+- Use strong, active verbs
+- Preserve all critical information
+- Aim for maximum impact with minimum words
+- Output ONLY the rewritten content`
 };
 
 export default async function handler(req, res) {
@@ -46,7 +131,7 @@ export default async function handler(req, res) {
         }
         
         const selectedStyle = style || 'professional';
-        const prompt = stylePrompts[selectedStyle] || stylePrompts.professional;
+        const systemPrompt = stylePrompts[selectedStyle] || stylePrompts.professional;
         
         // Call MiniMax API (Anthropic-compatible)
         const response = await fetch(`${MINIMAX_BASE_URL}/v1/messages`, {
@@ -59,14 +144,14 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: 'MiniMax-M2.5',
                 max_tokens: 4096,
-                system: 'You are a professional content rewriter. Rewrite the given text according to the specified style while maintaining the original meaning.',
+                system: systemPrompt,
                 messages: [
                     {
                         role: 'user',
                         content: [
                             {
                                 type: 'text',
-                                text: `${prompt}\n\nOriginal text:\n${text}`
+                                text: `Rewrite the following text:\n\n${text}`
                             }
                         ]
                     }
@@ -85,14 +170,20 @@ export default async function handler(req, res) {
         
         const data = await response.json();
         
-        // Extract the generated text from response
+        // Extract ONLY the text block - ignore thinking blocks
         let result = '';
         for (const block of data.content) {
             if (block.type === 'text') {
                 result += block.text;
-            } else if (block.type === 'thinking') {
-                result += block.thinking;
             }
+            // Skip thinking blocks - these are internal AI processes
+        }
+        
+        if (!result) {
+            return res.status(500).json({ 
+                error: 'No content returned',
+                message: 'The AI did not generate any content'
+            });
         }
         
         return res.status(200).json({ result });
